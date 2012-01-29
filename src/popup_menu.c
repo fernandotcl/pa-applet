@@ -49,7 +49,7 @@ void show_popup_menu(GtkStatusIcon *status_icon)
     // Populate it
     for (GSList *entry = as->profiles; entry; entry = g_slist_next(entry)) {
         audio_status_profile *profile = (audio_status_profile *)entry->data;
-        GtkWidget *item = gtk_check_menu_item_new_with_label(profile->description->str);
+        GtkWidget *item = gtk_check_menu_item_new_with_label(profile->description);
         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), profile->active);
         g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_item_activate), profile);
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);

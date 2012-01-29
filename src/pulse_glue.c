@@ -29,7 +29,7 @@ static gboolean subscribed = FALSE;
 
 static pa_operation *sink_reload_operation = NULL;
 static guint postponed_sink_reload_timeout_id;
-static gboolean has_postponed_sink_reload;
+static gboolean has_postponed_sink_reload = FALSE;
 
 static gboolean try_connect(gpointer data);
 static void server_info_cb(pa_context *c, const pa_server_info *info, void *data);
@@ -46,6 +46,8 @@ void pulse_glue_init()
 
 void pulse_glue_destroy()
 {
+    if (has_postponed_sink_reload)
+        g_source_remove(postponed_sink_reload_timeout_id);
     if (sink_reload_operation)
         pa_operation_unref(sink_reload_operation);
     if (context)
@@ -55,8 +57,9 @@ void pulse_glue_destroy()
 
 static gboolean postponed_sink_reload(gpointer data)
 {
-    // We no longer have a postponed sync reload
-    has_postponed_sink_reload = FALSE;
+    // Try again later if another sink reload operation is in progress
+    if (sink_reload_operation)
+        return TRUE;
 
     // Start a sink reload operation
     sink_reload_operation = pa_context_get_sink_info_by_index(context,
@@ -64,7 +67,26 @@ static gboolean postponed_sink_reload(gpointer data)
     if (!sink_reload_operation)
         g_printerr("pa_context_get_sink_info_by_index() failed\n");
 
+    // We no longer have a postponed sink reload operation
+    has_postponed_sink_reload = FALSE;
+
     return FALSE;
+}
+
+static void run_or_postpone_sink_reload()
+{
+    // Postpone if a sink reload operation is in progress, do it
+    // right away otherwise
+    if (sink_reload_operation) {
+        if (has_postponed_sink_reload)
+            g_source_remove(postponed_sink_reload_timeout_id);
+        postponed_sink_reload_timeout_id = g_timeout_add_seconds(1, postponed_sink_reload, NULL);
+        has_postponed_sink_reload = TRUE;
+    }
+    else {
+        postponed_sink_reload(NULL);
+        return;
+    }
 }
 
 static void event_cb(pa_context *c, pa_subscription_event_type_t type, uint32_t idx, void *data)
@@ -96,26 +118,9 @@ static void event_cb(pa_context *c, pa_subscription_event_type_t type, uint32_t 
             }
             break;
         case PA_SUBSCRIPTION_EVENT_SINK:
-            {
-                // Ignore this unless we're handling this sink
-                if (idx != default_sink_index)
-                    return;
-
-                // If we already have a sink reload operation, postpone a synchronization
-                if (sink_reload_operation) {
-                    if (has_postponed_sink_reload)
-                        g_source_remove(postponed_sink_reload_timeout_id);
-                    postponed_sink_reload_timeout_id = g_timeout_add_seconds(1, postponed_sink_reload, NULL);
-                    has_postponed_sink_reload = TRUE;
-                    return;
-                }
-
-                // Reload the sink index
-                sink_reload_operation = pa_context_get_sink_info_by_index(context,
-                        default_sink_index, sink_info_cb, NULL);
-                if (!sink_reload_operation)
-                    g_printerr("pa_context_get_sink_info_by_index() failed\n");
-            }
+            // If this is the sink we're handling, try to reload the sink status
+            if (idx == default_sink_index)
+                run_or_postpone_sink_reload();
             break;
         default:
             g_debug("Unhandled subscribed event type");
@@ -141,12 +146,12 @@ static void card_info_cb(pa_context *c, const pa_card_info *info, int eol, void 
     for (uint32_t i = 0; i < info->n_profiles; ++i) {
         pa_card_profile_info *info_profile = &info->profiles[i];
         audio_status_profile *profile = malloc(sizeof(audio_status_profile));
-        profile->name = g_string_new(info_profile->name);
-        profile->description = g_string_new(info_profile->description);
+        profile->name = g_strdup(info_profile->name);
+        profile->description = g_strdup(info_profile->description);
         profile->index = i;
         profile->priority = info_profile->priority;
         profile->active = info->active_profile == info_profile;
-        as->profiles = g_slist_append(as->profiles, profile);
+        as->profiles = g_slist_prepend(as->profiles, profile);
     }
     audio_status_sort_profiles();
 
@@ -224,11 +229,18 @@ static void server_info_cb(pa_context *c, const pa_server_info *info, void *data
         return;
     }
 
+    // If we have a sync reload operation in progress, get rid of it
+    if (has_postponed_sink_reload)
+        g_source_remove(postponed_sink_reload_timeout_id);
+    if (sink_reload_operation)
+        pa_operation_cancel(sink_reload_operation);
+
     // Get the default sink info
     sink_reload_operation = pa_context_get_sink_info_by_name(context,
             info->default_sink_name, sink_info_cb, NULL);
     if (!sink_reload_operation)
         g_printerr("pa_context_get_sink_info_by_name() failed\n");
+    run_or_postpone_sink_reload();
 }
 
 static void context_state_cb(pa_context *c, void *data)
@@ -245,7 +257,7 @@ static void context_state_cb(pa_context *c, void *data)
 
     // Handle the case where the server was terminated
     if (state == PA_CONTEXT_TERMINATED) {
-        g_debug("Server terminated, exiting...\n");
+        g_debug("Server terminated, exiting...");
         gtk_main_quit();
         return;
     }
@@ -347,7 +359,7 @@ void pulse_glue_sync_active_profile()
 
     // Sync with the server
     pa_operation *oper = pa_context_set_card_profile_by_index(context,
-            default_card_index, active_profile->name->str, NULL, NULL);
+            default_card_index, active_profile->name, NULL, NULL);
     if (oper)
         pa_operation_unref(oper);
     else

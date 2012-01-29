@@ -20,8 +20,8 @@ typedef struct {
 } audio_status;
 
 typedef struct {
-    GString *name;
-    GString *description;
+    gchar *name;
+    gchar *description;
     uint32_t index;
     uint32_t priority;
     gboolean active;

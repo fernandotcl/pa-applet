@@ -32,15 +32,17 @@ audio_status *shared_audio_status()
 static void profile_destroy(gpointer *data)
 {
     audio_status_profile *profile = (audio_status_profile *)data;
-    g_string_free(profile->name, TRUE);
-    g_string_free(profile->description, TRUE);
+    g_free(profile->name);
+    g_free(profile->description);
     free(profile);
 }
 
 void audio_status_reset_profiles()
 {
-    if (status.profiles)
+    if (status.profiles) {
         g_slist_free_full(status.profiles, (GDestroyNotify)profile_destroy);
+        status.profiles = NULL;
+    }
 }
 
 static gint profile_compare_func(gconstpointer a, gconstpointer b)
