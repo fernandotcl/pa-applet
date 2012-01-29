@@ -7,6 +7,8 @@
  *
  */
 
+#include <stdlib.h>
+
 #include "audio_status.h"
 
 audio_status status;
@@ -19,9 +21,42 @@ void audio_status_init()
 
 void audio_status_destroy()
 {
+    audio_status_reset_profiles();
 }
 
 audio_status *shared_audio_status()
 {
     return &status;
+}
+
+static void profile_destroy(gpointer *data)
+{
+    audio_status_profile *profile = (audio_status_profile *)data;
+    g_string_free(profile->name, TRUE);
+    g_string_free(profile->description, TRUE);
+    free(profile);
+}
+
+void audio_status_reset_profiles()
+{
+    if (status.profiles)
+        g_slist_free_full(status.profiles, (GDestroyNotify)profile_destroy);
+}
+
+static gint profile_compare_func(gconstpointer a, gconstpointer b)
+{
+    audio_status_profile *profile_a = (audio_status_profile *)a;
+    audio_status_profile *profile_b = (audio_status_profile *)b;
+    if (profile_a->priority > profile_b->priority)
+        return -1;
+    else if (profile_b->priority > profile_a->priority)
+        return 1;
+    else
+        return 0;
+}
+
+void audio_status_sort_profiles()
+{
+    if (status.profiles)
+        status.profiles = g_slist_sort(status.profiles, profile_compare_func);
 }

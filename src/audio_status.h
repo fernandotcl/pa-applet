@@ -11,14 +11,26 @@
 #define AUDIO_STATUS_H
 
 #include <glib.h>
+#include <stdint.h>
 
 typedef struct {
     gdouble volume;
     gboolean muted;
+    GSList *profiles;
 } audio_status;
+
+typedef struct {
+    GString *name;
+    GString *description;
+    uint32_t index;
+    uint32_t priority;
+    gboolean active;
+} audio_status_profile;
 
 void audio_status_init();
 void audio_status_destroy();
 audio_status *shared_audio_status();
+void audio_status_reset_profiles();
+void audio_status_sort_profiles();
 
 #endif

@@ -15,5 +15,6 @@ void pulse_glue_destroy();
 void pulse_glue_start();
 void pulse_glue_sync_volume();
 void pulse_glue_sync_muted();
+void pulse_glue_sync_active_profile();
 
 #endif

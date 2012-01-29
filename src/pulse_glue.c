@@ -10,8 +10,10 @@
 #include <gtk/gtk.h>
 #include <pulse/glib-mainloop.h>
 #include <pulse/pulseaudio.h>
+#include <stdlib.h>
 
 #include "audio_status.h"
+#include "popup_menu.h"
 #include "pulse_glue.h"
 #include "tray_icon.h"
 #include "volume_scale.h"
@@ -22,6 +24,7 @@ static pa_mainloop_api *api;
 
 static uint32_t default_sink_index;
 static unsigned int default_sink_num_channels;
+static uint32_t default_card_index;
 static gboolean subscribed = FALSE;
 
 static pa_operation *sink_reload_operation = NULL;
@@ -30,6 +33,7 @@ static gboolean has_postponed_sink_reload;
 
 static gboolean try_connect(gpointer data);
 static void server_info_cb(pa_context *c, const pa_server_info *info, void *data);
+static void card_info_cb(pa_context *c, const pa_card_info *info, int eol, void *data);
 static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void *data);
 
 void pulse_glue_init()
@@ -77,8 +81,19 @@ static void event_cb(pa_context *c, pa_subscription_event_type_t type, uint32_t 
             }
             break;
         case PA_SUBSCRIPTION_EVENT_CARD:
-            // Reload the card info
-            // TODO: No card info to reload for now
+            {
+                // Ignore this unless we're handling this card
+                if (idx != default_card_index)
+                    return;
+
+                // Reload the card info
+                pa_operation *oper = pa_context_get_card_info_by_index(context,
+                        default_card_index, card_info_cb, NULL);
+                if (oper)
+                    pa_operation_unref(oper);
+                else
+                    g_printerr("pa_context_get_card_info_by_index() failed\n");
+            }
             break;
         case PA_SUBSCRIPTION_EVENT_SINK:
             {
@@ -108,6 +123,37 @@ static void event_cb(pa_context *c, pa_subscription_event_type_t type, uint32_t 
     }
 }
 
+static void card_info_cb(pa_context *c, const pa_card_info *info, int eol, void *data)
+{
+    // Check if this is the termination call
+    if (eol > 0)
+        return;
+
+    // Handle errors
+    if (eol < 0 || !info) {
+        g_printerr("Sink info callback failure\n");
+        return;
+    }
+
+    // Add the profiles to the audio status
+    audio_status_reset_profiles();
+    audio_status *as = shared_audio_status();
+    for (uint32_t i = 0; i < info->n_profiles; ++i) {
+        pa_card_profile_info *info_profile = &info->profiles[i];
+        audio_status_profile *profile = malloc(sizeof(audio_status_profile));
+        profile->name = g_string_new(info_profile->name);
+        profile->description = g_string_new(info_profile->description);
+        profile->index = i;
+        profile->priority = info_profile->priority;
+        profile->active = info->active_profile == info_profile;
+        as->profiles = g_slist_append(as->profiles, profile);
+    }
+    audio_status_sort_profiles();
+
+    // Update the popup menu
+    update_popup_menu();
+}
+
 static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void *data)
 {
     // Check if this is the termination call
@@ -115,6 +161,7 @@ static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void 
         return;
 
     // Get rid of the reference to the operation
+    g_assert(sink_reload_operation);
     pa_operation_unref(sink_reload_operation);
     sink_reload_operation = NULL;
 
@@ -127,6 +174,7 @@ static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void 
     // Save the default sink info we'll need
     default_sink_index = info->index;
     default_sink_num_channels = info->volume.channels;
+    default_card_index = info->card;
 
     // If we aren't subscribed yet, subscribe now
     if (!subscribed) {
@@ -151,6 +199,14 @@ static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void 
     // Update the tray icon and the volume scale
     update_tray_icon();
     update_volume_scale();
+
+    // Start getting information about the card
+    pa_operation *oper = pa_context_get_card_info_by_index(context,
+            default_card_index, card_info_cb, NULL);
+    if (oper)
+        pa_operation_unref(oper);
+    else
+        g_printerr("pa_context_get_card_info_by_index() failed\n");
 }
 
 static void server_info_cb(pa_context *c, const pa_server_info *info, void *data)
@@ -268,4 +324,32 @@ void pulse_glue_sync_muted()
         pa_operation_unref(oper);
     else
         g_printerr("pa_context_set_sink_mute_by_index() failed\n");
+}
+
+void pulse_glue_sync_active_profile()
+{
+    // Nothing to do if we don't have a context
+    if (!context)
+        return;
+
+    // Find the active profile
+    audio_status_profile *active_profile = NULL;
+    audio_status *as = shared_audio_status();
+    uint32_t index = 0;
+    for (GSList *entry = as->profiles; entry;entry = g_slist_next(entry), ++index) {
+        audio_status_profile *profile = (audio_status_profile *)entry->data;
+        if (profile->active) {
+            active_profile = profile;
+            break;
+        }
+    }
+    g_assert(active_profile);
+
+    // Sync with the server
+    pa_operation *oper = pa_context_set_card_profile_by_index(context,
+            default_card_index, active_profile->name->str, NULL, NULL);
+    if (oper)
+        pa_operation_unref(oper);
+    else
+        g_printerr("pa_context_set_card_profile_by_index() failed\n");
 }

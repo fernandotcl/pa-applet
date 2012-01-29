@@ -97,7 +97,7 @@ static void on_menu(GtkStatusIcon *status_icon, gpointer data)
 
     // Show the popup menu unless something was already visible
     if (!is_volume_scale_visible() && !is_popup_menu_visible())
-        show_popup_menu();
+        show_popup_menu(tray_icon);
 }
 
 static gboolean on_button_release(GtkStatusIcon *status_icon, GdkEventButton *event, gpointer data)
