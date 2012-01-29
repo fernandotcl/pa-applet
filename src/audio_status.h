@@ -22,7 +22,6 @@ typedef struct {
 typedef struct {
     gchar *name;
     gchar *description;
-    uint32_t index;
     uint32_t priority;
     gboolean active;
 } audio_status_profile;

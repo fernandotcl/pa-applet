@@ -10,7 +10,6 @@
 #include <gtk/gtk.h>
 #include <pulse/glib-mainloop.h>
 #include <pulse/pulseaudio.h>
-#include <stdlib.h>
 
 #include "audio_status.h"
 #include "popup_menu.h"
@@ -145,13 +144,12 @@ static void card_info_cb(pa_context *c, const pa_card_info *info, int eol, void 
     audio_status *as = shared_audio_status();
     for (uint32_t i = 0; i < info->n_profiles; ++i) {
         pa_card_profile_info *info_profile = &info->profiles[i];
-        audio_status_profile *profile = malloc(sizeof(audio_status_profile));
+        audio_status_profile *profile = g_malloc(sizeof(audio_status_profile));
         profile->name = g_strdup(info_profile->name);
         profile->description = g_strdup(info_profile->description);
-        profile->index = i;
         profile->priority = info_profile->priority;
         profile->active = info->active_profile == info_profile;
-        as->profiles = g_slist_prepend(as->profiles, profile);
+        as->profiles = g_slist_append(as->profiles, profile);
     }
     audio_status_sort_profiles();
 
@@ -257,7 +255,7 @@ static void context_state_cb(pa_context *c, void *data)
 
     // Handle the case where the server was terminated
     if (state == PA_CONTEXT_TERMINATED) {
-        g_debug("Server terminated, exiting...");
+        g_debug("Server terminated, exiting...\n");
         gtk_main_quit();
         return;
     }

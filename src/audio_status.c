@@ -7,8 +7,6 @@
  *
  */
 
-#include <stdlib.h>
-
 #include "audio_status.h"
 
 audio_status status;
@@ -34,7 +32,7 @@ static void profile_destroy(gpointer *data)
     audio_status_profile *profile = (audio_status_profile *)data;
     g_free(profile->name);
     g_free(profile->description);
-    free(profile);
+    g_free(profile);
 }
 
 void audio_status_reset_profiles()
