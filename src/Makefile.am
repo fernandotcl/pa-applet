@@ -4,6 +4,8 @@ pa_applet_SOURCES = \
     audio_status.c \
     audio_status.h \
     main.c \
+    key_grabber.c \
+    key_grabber.h \
     popup_menu.c \
     popup_menu.h \
     pulse_glue.c \
@@ -19,11 +21,13 @@ pa_applet_CPPFLAGS = \
     $(GTK3_CFLAGS) \
     $(LIBPULSE_CFLAGS) \
     $(LIBPULSE_GLIB_CFLAGS) \
-    $(LIBNOTIFY_CFLAGS)
+    $(LIBNOTIFY_CFLAGS) \
+    $(XLIB_CFLAGS)
 
 pa_applet_LDADD = \
     $(GLIB_LIBS) \
     $(GTK3_LIBS) \
     $(LIBPULSE_LIBS) \
     $(LIBPULSE_GLIB_LIBS) \
-    $(LIBNOTIFY_LIBS)
+    $(LIBNOTIFY_LIBS) \
+    $(XLIB_LIBS)
