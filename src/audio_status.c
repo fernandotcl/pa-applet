@@ -7,6 +7,8 @@
  *
  */
 
+#define STATUS_STEP_SIZE 5.0
+
 #include "audio_status.h"
 
 audio_status status;
@@ -33,6 +35,25 @@ static void profile_destroy(gpointer *data)
     g_free(profile->name);
     g_free(profile->description);
     g_free(profile);
+}
+
+void audio_status_raise_volume()
+{
+    status.volume += STATUS_STEP_SIZE;
+    if (status.volume > 100.0)
+        status.volume = 100.0;
+}
+
+void audio_status_lower_volume()
+{
+    status.volume -= STATUS_STEP_SIZE;
+    if (status.volume < 0.0)
+        status.volume = 0.0;
+}
+
+void audio_status_toggle_muted()
+{
+    status.muted = !status.muted;
 }
 
 void audio_status_reset_profiles()

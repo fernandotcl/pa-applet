@@ -17,8 +17,6 @@
 #include "tray_icon.h"
 #include "volume_scale.h"
 
-#define WHEEL_STEP_SIZE 5.0
-
 static GtkStatusIcon *tray_icon = NULL;
 static gboolean updated_once = FALSE;
 
@@ -58,21 +56,16 @@ static void on_scroll(GtkStatusIcon *status_icon, GdkEventScroll *event, gpointe
         return;
 
     // Bump the volume level
-    audio_status *as = shared_audio_status();
     switch (event->direction) {
         case GDK_SCROLL_UP:
         case GDK_SCROLL_RIGHT:
-            as->volume += WHEEL_STEP_SIZE;
+            audio_status_raise_volume();
             break;
         case GDK_SCROLL_DOWN:
         case GDK_SCROLL_LEFT:
-            as->volume -= WHEEL_STEP_SIZE;
+            audio_status_lower_volume();
             break;
     }
-    if (as->volume < 0.0)
-        as->volume = 0.0;
-    else if (as->volume > 100.0)
-        as->volume = 100.0;
 
     // Sync with the server
     pulse_glue_sync_volume();
@@ -111,7 +104,7 @@ static gboolean on_button_release(GtkStatusIcon *status_icon, GdkEventButton *ev
         return FALSE;
 
     // Update the audio status and sync with the server
-    shared_audio_status()->muted = !shared_audio_status()->muted;
+    audio_status_toggle_muted();
     pulse_glue_sync_muted();
 
     // Update the tray icon as well
