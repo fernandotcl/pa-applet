@@ -21,10 +21,11 @@ static pa_context *context;
 static pa_glib_mainloop *loop;
 static pa_mainloop_api *api;
 
+static gboolean subscribed = FALSE;
+static gboolean have_default_card_index = FALSE;
+static uint32_t default_card_index;
 static uint32_t default_sink_index;
 static unsigned int default_sink_num_channels;
-static uint32_t default_card_index;
-static gboolean subscribed = FALSE;
 
 static pa_operation *sink_reload_operation = NULL;
 static guint postponed_sink_reload_timeout_id;
@@ -174,10 +175,15 @@ static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void 
         return;
     }
 
-    // Save the default sink info we'll need
+    // Check if the default card changed and save it
+    gboolean default_card_changed = !have_default_card_index ||
+        default_card_index != info->card;
+    default_card_index = info->card;
+    have_default_card_index = TRUE;
+
+    // Save the default sink and the number of volume channels
     default_sink_index = info->index;
     default_sink_num_channels = info->volume.channels;
-    default_card_index = info->card;
 
     // If we aren't subscribed yet, subscribe now
     if (!subscribed) {
@@ -203,13 +209,15 @@ static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void 
     update_tray_icon();
     update_volume_scale();
 
-    // Start getting information about the card
-    pa_operation *oper = pa_context_get_card_info_by_index(context,
-            default_card_index, card_info_cb, NULL);
-    if (oper)
-        pa_operation_unref(oper);
-    else
-        g_printerr("pa_context_get_card_info_by_index() failed\n");
+    // Start getting information about the card if it changed
+    if (default_card_changed) {
+        pa_operation *oper = pa_context_get_card_info_by_index(context,
+                default_card_index, card_info_cb, NULL);
+        if (oper)
+            pa_operation_unref(oper);
+        else
+            g_printerr("pa_context_get_card_info_by_index() failed\n");
+    }
 }
 
 static void server_info_cb(pa_context *c, const pa_server_info *info, void *data)
