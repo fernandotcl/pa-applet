@@ -12,6 +12,7 @@
 
 #include "audio_status.h"
 #include "key_grabber.h"
+#include "notifications.h"
 #include "pulse_glue.h"
 #include "tray_icon.h"
 
@@ -21,18 +22,21 @@ static void volume_raise_key_pressed()
 {
     audio_status_raise_volume();
     pulse_glue_sync_volume();
+    notifications_flash();
 }
 
 static void volume_lower_key_pressed()
 {
     audio_status_lower_volume();
     pulse_glue_sync_volume();
+    notifications_flash();
 }
 
 static void volume_mute_key_pressed()
 {
     audio_status_toggle_muted();
     pulse_glue_sync_muted();
+    notifications_flash();
 }
 
 int main(int argc, char **argv)
@@ -42,6 +46,7 @@ int main(int argc, char **argv)
     audio_status_init();
     pulse_glue_init();
     create_tray_icon();
+    notifications_init();
 
     key_grabber_register_volume_raise_callback(volume_raise_key_pressed);
     key_grabber_register_volume_lower_callback(volume_lower_key_pressed);
@@ -53,6 +58,7 @@ int main(int argc, char **argv)
     gtk_main();
 
     key_grabber_ungrab_keys();
+    notifications_destroy();
     destroy_tray_icon();
     pulse_glue_destroy();
     audio_status_destroy();

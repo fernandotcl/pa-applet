@@ -3,9 +3,11 @@ bin_PROGRAMS = pa-applet
 pa_applet_SOURCES = \
     audio_status.c \
     audio_status.h \
-    main.c \
     key_grabber.c \
     key_grabber.h \
+    main.c \
+    notifications.h \
+    notifications.c \
     popup_menu.c \
     popup_menu.h \
     pulse_glue.c \
