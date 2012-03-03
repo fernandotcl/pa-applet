@@ -1,0 +1,29 @@
+.TH PA\-APPLET 1 2011-04-20 "pa\-applet" "pa\-applet Manual"
+.SH NAME
+pa\-applet \- PulseAudio control applet
+.SH SYNOPSIS
+.B pa\-applet
+[\fB\-\-disable-key-grabbing\fR]
+[\fB\-\-disable-notifications\fR]
+.br
+.B pa\-applet
+[\fB\-h\fR]
+.SH DESCRIPTION
+pa\-applet allows you to control some of PulseAudio's features such as volume levels and active profile. It is a systray applet that can be embedded in the notification area of a desktop panel.
+
+By default, pa\-applet attempts to grab volume keys so those keys can be used to control the volume level for PulseAudio's default sink. pa\-applet also shows notifications when the volume is changed this way, provided you have a notification daemon running.
+.SH OPTIONS
+.TP 26
+.B \-h\fR/\fB\-\-help
+Display usage information and exit
+.TP
+.B \-\-disable-key-grabbing
+Don't attempt to grab volume keys
+.TP
+.B \-\-disable-notifications
+Don't attempt to display notifications
+.SH SEE ALSO
+.B pacmd\fR(1),
+.B padevchooser\fR(1),
+.B pavucontrol\fR(1),
+.B pulseaudio\fR(1)
