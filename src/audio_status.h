@@ -26,16 +26,16 @@ typedef struct {
     gboolean active;
 } audio_status_profile;
 
-audio_status *shared_audio_status();
+audio_status *shared_audio_status(void);
 
-void audio_status_init();
-void audio_status_destroy();
+void audio_status_init(void);
+void audio_status_destroy(void);
 
-void audio_status_reset_profiles();
-void audio_status_sort_profiles();
+void audio_status_reset_profiles(void);
+void audio_status_sort_profiles(void);
 
-void audio_status_raise_volume();
-void audio_status_lower_volume();
-void audio_status_toggle_muted();
+void audio_status_raise_volume(void);
+void audio_status_lower_volume(void);
+void audio_status_toggle_muted(void);
 
 #endif

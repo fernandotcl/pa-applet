@@ -36,7 +36,7 @@ static void server_info_cb(pa_context *c, const pa_server_info *info, void *data
 static void card_info_cb(pa_context *c, const pa_card_info *info, int eol, void *data);
 static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void *data);
 
-void pulse_glue_init()
+void pulse_glue_init(void)
 {
     loop = pa_glib_mainloop_new(g_main_context_default());
     g_assert(loop);
@@ -44,7 +44,7 @@ void pulse_glue_init()
     g_assert(api);
 }
 
-void pulse_glue_destroy()
+void pulse_glue_destroy(void)
 {
     if (has_postponed_sink_reload)
         g_source_remove(postponed_sink_reload_timeout_id);
@@ -73,7 +73,7 @@ static gboolean postponed_sink_reload(gpointer data)
     return FALSE;
 }
 
-static void run_or_postpone_sink_reload()
+static void run_or_postpone_sink_reload(void)
 {
     // Postpone if a sink reload operation is in progress, do it
     // right away otherwise
@@ -302,12 +302,12 @@ static gboolean try_connect(gpointer data)
     return FALSE;
 }
 
-void pulse_glue_start()
+void pulse_glue_start(void)
 {
     try_connect(NULL);
 }
 
-void pulse_glue_sync_volume()
+void pulse_glue_sync_volume(void)
 {
     // Nothing to do if we don't have a context
     if (!context)
@@ -329,7 +329,7 @@ void pulse_glue_sync_volume()
         g_printerr("pa_context_set_sink_volume_by_index() failed\n");
 }
 
-void pulse_glue_sync_muted()
+void pulse_glue_sync_muted(void)
 {
     // Nothing to do if we don't have a context
     if (!context)
@@ -344,7 +344,7 @@ void pulse_glue_sync_muted()
         g_printerr("pa_context_set_sink_mute_by_index() failed\n");
 }
 
-void pulse_glue_sync_active_profile()
+void pulse_glue_sync_active_profile(void)
 {
     // Nothing to do if we don't have a context
     if (!context)

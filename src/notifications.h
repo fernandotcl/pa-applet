@@ -10,8 +10,8 @@
 #ifndef NOTIFICATIONS_H
 #define NOTIFICATIONS_H
 
-void notifications_init();
-void notifications_destroy();
-void notifications_flash();
+void notifications_init(void);
+void notifications_destroy(void);
+void notifications_flash(void);
 
 #endif

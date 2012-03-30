@@ -113,7 +113,7 @@ static gboolean on_button_release(GtkStatusIcon *status_icon, GdkEventButton *ev
     return TRUE;
 }
 
-void create_tray_icon()
+void create_tray_icon(void)
 {
     tray_icon = gtk_status_icon_new();
     g_signal_connect(G_OBJECT(tray_icon), "activate", G_CALLBACK(on_activate), NULL);
@@ -122,7 +122,7 @@ void create_tray_icon()
     g_signal_connect(G_OBJECT(tray_icon), "button-press-event", G_CALLBACK(on_button_release), NULL);
 }
 
-void destroy_tray_icon()
+void destroy_tray_icon(void)
 {
     if (tray_icon) {
         gtk_widget_destroy(GTK_WIDGET(tray_icon));
@@ -132,7 +132,7 @@ void destroy_tray_icon()
     destroy_popup_menu();
 }
 
-void update_tray_icon()
+void update_tray_icon(void)
 {
     // Yes, we've been updated once now
     updated_once = TRUE;

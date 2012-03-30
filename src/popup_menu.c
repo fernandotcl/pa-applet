@@ -15,7 +15,7 @@
 
 static GSList *profile_names = NULL;
 
-void destroy_popup_menu()
+void destroy_popup_menu(void)
 {
     // Nothing needs to be done at the moment
 }
@@ -99,12 +99,12 @@ void show_popup_menu(GtkStatusIcon *status_icon)
             status_icon, 0, gtk_get_current_event_time());
 }
 
-void hide_popup_menu()
+void hide_popup_menu(void)
 {
     // Nothing needs to be done at the moment
 }
 
-gboolean is_popup_menu_visible()
+gboolean is_popup_menu_visible(void)
 {
     // Right now we can't tell, but it doesn't really matter as
     // if the user managed to click the tray icon, the popup menu
@@ -112,7 +112,7 @@ gboolean is_popup_menu_visible()
     return FALSE;
 }
 
-void update_popup_menu()
+void update_popup_menu(void)
 {
     // Nothing needs to be done at the moment
 }

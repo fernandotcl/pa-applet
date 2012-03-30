@@ -12,8 +12,8 @@
 
 #include "audio_status.h"
 
-void create_tray_icon();
-void destroy_tray_icon();
-void update_tray_icon();
+void create_tray_icon(void);
+void destroy_tray_icon(void);
+void update_tray_icon(void);
 
 #endif

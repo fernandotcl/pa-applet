@@ -10,11 +10,11 @@
 #ifndef PULSE_GLUE_H
 #define PULSE_GLUE_H
 
-void pulse_glue_init();
-void pulse_glue_destroy();
-void pulse_glue_start();
-void pulse_glue_sync_volume();
-void pulse_glue_sync_muted();
-void pulse_glue_sync_active_profile();
+void pulse_glue_init(void);
+void pulse_glue_destroy(void);
+void pulse_glue_start(void);
+void pulse_glue_sync_volume(void);
+void pulse_glue_sync_muted(void);
+void pulse_glue_sync_active_profile(void);
 
 #endif

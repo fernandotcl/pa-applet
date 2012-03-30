@@ -12,11 +12,11 @@
 
 #include <gtk/gtk.h>
 
-void destroy_volume_scale();
+void destroy_volume_scale(void);
 void show_volume_scale(GdkRectangle *rect_or_null);
 void flash_volume_scale(GdkRectangle *rect_or_null);
-void hide_volume_scale();
-gboolean is_volume_scale_visible();
-void update_volume_scale();
+void hide_volume_scale(void);
+gboolean is_volume_scale_visible(void);
+void update_volume_scale(void);
 
 #endif

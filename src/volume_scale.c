@@ -31,7 +31,7 @@ static void on_scale_value_change(GtkRange *range, gpointer data)
     pulse_glue_sync_volume();
 }
 
-static void create_volume_scale()
+static void create_volume_scale(void)
 {
     // Create a popup window
     window = gtk_window_new(GTK_WINDOW_POPUP);
@@ -52,7 +52,7 @@ static void create_volume_scale()
     g_signal_connect(G_OBJECT(scale), "value-changed", G_CALLBACK(on_scale_value_change), NULL);
 }
 
-void destroy_volume_scale()
+void destroy_volume_scale(void)
 {
     // Get rid of the popup window
     if (window) {
@@ -146,7 +146,7 @@ void flash_volume_scale(GdkRectangle *rect_or_null)
     flashing = TRUE;
 }
 
-void hide_volume_scale()
+void hide_volume_scale(void)
 {
     // Nothing to do if we were hidden anyways
     if (!visible)
@@ -164,12 +164,12 @@ void hide_volume_scale()
     flashing = FALSE;
 }
 
-gboolean is_volume_scale_visible()
+gboolean is_volume_scale_visible(void)
 {
     return visible && !flashing;
 }
 
-void update_volume_scale()
+void update_volume_scale(void)
 {
     // Update the volume level only if we're visible
     if (visible) {

@@ -54,7 +54,7 @@ static GdkFilterReturn filter_func(GdkXEvent *gdk_xevent, GdkEvent *event, gpoin
     return GDK_FILTER_CONTINUE;
 }
 
-void key_grabber_grab_keys()
+void key_grabber_grab_keys(void)
 {
     // Find the X11 display
     GdkDisplay *gdkDisplay = gdk_display_get_default();
@@ -115,7 +115,7 @@ void key_grabber_grab_keys()
     }
 }
 
-void key_grabber_ungrab_keys()
+void key_grabber_ungrab_keys(void)
 {
     // Find the X11 display
     GdkDisplay *gdkDisplay = gdk_display_get_default();

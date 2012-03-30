@@ -16,7 +16,7 @@
 gboolean have_notifications = FALSE;
 NotifyNotification *notification = NULL;
 
-void notifications_init()
+void notifications_init(void)
 {
     if (notify_init(PROGRAM_NAME)) {
         // Create and configure the notification
@@ -39,7 +39,7 @@ void notifications_init()
     }
 }
 
-void notifications_destroy()
+void notifications_destroy(void)
 {
     if (have_notifications) {
         notify_uninit();
@@ -48,7 +48,7 @@ void notifications_destroy()
     }
 }
 
-void notifications_flash()
+void notifications_flash(void)
 {
     // Nothing to do if we don't support notifications
     if (!have_notifications || !notification)

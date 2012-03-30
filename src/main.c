@@ -20,21 +20,21 @@
 
 #define KEY_STEP_SIZE 3.0
 
-static void volume_raise_key_pressed()
+static void volume_raise_key_pressed(void)
 {
     audio_status_raise_volume();
     pulse_glue_sync_volume();
     notifications_flash();
 }
 
-static void volume_lower_key_pressed()
+static void volume_lower_key_pressed(void)
 {
     audio_status_lower_volume();
     pulse_glue_sync_volume();
     notifications_flash();
 }
 
-static void volume_mute_key_pressed()
+static void volume_mute_key_pressed(void)
 {
     audio_status_toggle_muted();
     pulse_glue_sync_muted();

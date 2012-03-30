@@ -10,10 +10,10 @@
 #ifndef POPUP_MENU_H
 #define POPUP_MENU_H
 
-void destroy_popup_menu();
+void destroy_popup_menu(void);
 void show_popup_menu(GtkStatusIcon *status_icon);
-void hide_popup_menu();
-gboolean is_popup_menu_visible();
-void update_popup_menu();
+void hide_popup_menu(void);
+gboolean is_popup_menu_visible(void);
+void update_popup_menu(void);
 
 #endif
