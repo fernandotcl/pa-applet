@@ -95,12 +95,21 @@ static void do_show_volume_scale(GdkRectangle *rect_or_null)
 
 static void on_pointer_press(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
-    // Ungrab the pointer
-    gdk_pointer_ungrab(GDK_CURRENT_TIME);
-    gdk_flush();
-
     // Hide the volume scale
     hide_volume_scale();
+
+    // Find the pointer device, if possible
+    GdkDevice *device = gtk_get_current_event_device();
+    if (device && gdk_device_get_source(device) == GDK_SOURCE_KEYBOARD)
+        device = gdk_device_get_associated_device(device);
+    if (!device) {
+        g_printerr("Failed to find the pointer device\n");
+        return;
+    }
+
+    // Ungrab it
+    gdk_device_ungrab(device, GDK_CURRENT_TIME);
+    gdk_flush();
 }
 
 void show_volume_scale(GdkRectangle *rect_or_null)
@@ -108,10 +117,19 @@ void show_volume_scale(GdkRectangle *rect_or_null)
     // Actually show the volume scale
     do_show_volume_scale(rect_or_null);
 
-    // Grab the pointer so we can hide the scale
+    // Find the pointer device, if possible
+    GdkDevice *device = gtk_get_current_event_device();
+    if (device && gdk_device_get_source(device) == GDK_SOURCE_KEYBOARD)
+        device = gdk_device_get_associated_device(device);
+    if (!device) {
+        g_printerr("Failed to find the pointer device\n");
+        return;
+    }
+
+    // Grab it so we can hide the scale when the user clicks outside it
     g_signal_connect_after(G_OBJECT(window), "button_press_event", G_CALLBACK(on_pointer_press), NULL);
-    gdk_pointer_grab(gtk_widget_get_window(window), TRUE,
-            GDK_BUTTON_PRESS_MASK, NULL, NULL, GDK_CURRENT_TIME);
+    gdk_device_grab(device, gtk_widget_get_window(window), GDK_OWNERSHIP_NONE,
+            TRUE, GDK_BUTTON_PRESS_MASK, NULL, GDK_CURRENT_TIME);
     gdk_flush();
 }
 
