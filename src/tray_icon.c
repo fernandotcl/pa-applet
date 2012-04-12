@@ -65,6 +65,8 @@ static void on_scroll(GtkStatusIcon *status_icon, GdkEventScroll *event, gpointe
         case GDK_SCROLL_LEFT:
             audio_status_lower_volume();
             break;
+        default:
+            return;
     }
 
     // Sync with the server
