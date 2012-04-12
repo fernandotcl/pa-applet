@@ -77,8 +77,13 @@ void key_grabber_grab_keys(void)
         }
     }
 
+    int numScreens = 1;
+#if GDK_VERSION_CUR_STABLE < G_ENCODE_VERSION(3, 10)
+    numScreens = gdk_display_get_n_screens(gdkDisplay);
+#endif
+
     // Grab the keys for all screens
-    for (int i = 0; i < gdk_display_get_n_screens(gdkDisplay); ++i) {
+    for (int i = 0; i < numScreens; ++i) {
         GdkScreen *screen = gdk_display_get_screen(gdkDisplay, i);
         if (screen == NULL)
             continue;
@@ -121,8 +126,13 @@ void key_grabber_ungrab_keys(void)
     GdkDisplay *gdkDisplay = gdk_display_get_default();
     Display *dpy = GDK_DISPLAY_XDISPLAY(gdkDisplay);
 
+    int numScreens = 1;
+#if GDK_VERSION_CUR_STABLE < G_ENCODE_VERSION(3, 10)
+    numScreens = gdk_display_get_n_screens(gdkDisplay);
+#endif
+
     // Ungrab the keys for all screens
-    for (int i = 0; i < gdk_display_get_n_screens(gdkDisplay); ++i) {
+    for (int i = 0; i < numScreens; ++i) {
         GdkScreen *screen = gdk_display_get_screen(gdkDisplay, i);
         if (screen == NULL)
             continue;
