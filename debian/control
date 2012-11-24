@@ -1,0 +1,20 @@
+Source: pa-applet
+Section: unknown
+Priority: extra
+Maintainer: Emil Mikulic <emikulic@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, cdbs, autoconf, automake,
+ pkg-config, libglib2.0-dev, libgtk-3-dev, libpulse-dev, libnotify-dev
+Standards-Version: 3.9.3
+Homepage: https://github.com/fernandotcl/pa-applet
+#Vcs-Git: git://git.debian.org/collab-maint/pa-applet.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/pa-applet.git;a=summary
+
+Package: pa-applet
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: PulseAudio volume applet
+ pa-applet allows you to control the volume level of the default sink and mute
+ or unmute it. It also allows you to change the active profile of the default
+ sink, which can be useful to tell PulseAudio to redirect audio to the HDMI
+ output instead of outputting to the built-in speakers in a computer connected
+ to an HDMI device.

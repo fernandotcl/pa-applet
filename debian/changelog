@@ -1,0 +1,5 @@
+pa-applet (1.0.0) unstable; urgency=low
+
+  * First cut at Debian package.
+
+ -- Emil Mikulic <emikulic@gmail.com>  Sat, 24 Nov 2012 23:18:21 +1100

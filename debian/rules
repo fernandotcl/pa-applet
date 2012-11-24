@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+DEB_ISNATIVE=1
+
+# Use autogen.sh to generate the configure script.
+debian/autogen-stamp:
+	sh autogen.sh
+	touch debian/autogen-stamp
+
+makebuilddir/pa-applet:: debian/autogen-stamp
+
+cleanbuilddir/pa-applet::
+	rm -f Makefile.in aclocal.m4 config.h.in configure depcomp install-sh
+	rm -f man/Makefile.in missing src/Makefile.in
+	rm -rf autom4te.cache
+	rm -f debian/autogen-stamp
