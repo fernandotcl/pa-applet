@@ -1,0 +1,2 @@
+shlibs:Depends=libc6 (>= 2.3.4), libglib2.0-0 (>= 2.28.0), libgtk-3-0 (>= 3.0.0), libnotify4 (>= 0.7.0), libpulse-mainloop-glib0 (>= 1:0.99.1), libpulse0 (>= 1:0.99.1), libx11-6
+misc:Depends=
