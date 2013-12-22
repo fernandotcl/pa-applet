@@ -78,7 +78,16 @@ void key_grabber_grab_keys(void)
     }
 
     // Grab the keys for all screens
-    for (int i = 0; i < gdk_display_get_n_screens(gdkDisplay); ++i) {
+    int n_screens = 1;
+#if GDK_VERSION_CUR_STABLE < G_ENCODE_VERSION(3, 10)
+    /* gdk_display_get_n_screens is deprecated after 3.10 */
+    /* GLIB_VERSION_CUR_STABLE was changed to GDK_VERSION_CUR_STABLE in GTK3.
+       If compiling with GTK2, GDK_VERSION_CUR_STABLE will be
+       undefined and evaluate to 0, resulting in the conditional being true. */
+    n_screens = gdk_display_get_n_screens(gdkDisplay);
+#endif
+
+    for (int i = 0; i < n_screens; ++i) {
         GdkScreen *screen = gdk_display_get_screen(gdkDisplay, i);
         if (screen == NULL)
             continue;
@@ -122,7 +131,16 @@ void key_grabber_ungrab_keys(void)
     Display *dpy = GDK_DISPLAY_XDISPLAY(gdkDisplay);
 
     // Ungrab the keys for all screens
-    for (int i = 0; i < gdk_display_get_n_screens(gdkDisplay); ++i) {
+    int n_screens = 1;
+#if GDK_VERSION_CUR_STABLE < G_ENCODE_VERSION(3, 10)
+    /* gdk_display_get_n_screens is deprecated after 3.10 */
+    /* GLIB_VERSION_CUR_STABLE was changed to GDK_VERSION_CUR_STABLE in GTK3.
+       If compiling with GTK2, GDK_VERSION_CUR_STABLE will be
+       undefined and evaluate to 0, resulting in the conditional being true. */
+    n_screens = gdk_display_get_n_screens(gdkDisplay);
+#endif
+
+    for (int i = 0; i < n_screens; ++i) {
         GdkScreen *screen = gdk_display_get_screen(gdkDisplay, i);
         if (screen == NULL)
             continue;
