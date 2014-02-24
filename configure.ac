@@ -17,6 +17,7 @@ PKG_CHECK_MODULES([LIBPULSE], [libpulse])
 PKG_CHECK_MODULES([LIBPULSE_GLIB], [libpulse-mainloop-glib])
 PKG_CHECK_MODULES([LIBNOTIFY], [libnotify])
 PKG_CHECK_MODULES([XLIB], [x11])
+PKG_CHECK_MODULES([LIBCANBERRA], [libcanberra])
 
 AC_CONFIG_FILES([Makefile man/Makefile src/Makefile])
 AC_OUTPUT
