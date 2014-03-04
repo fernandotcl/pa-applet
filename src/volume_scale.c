@@ -78,10 +78,22 @@ static void do_show_volume_scale(GdkRectangle *rect_or_null)
 
     // Position the window
     if (rect_or_null) {
+	// Get monitor coordinates
+	GdkRectangle rectmonitor;
+	GdkScreen *screen = gtk_widget_get_screen(window);
+	gdk_screen_get_monitor_geometry(screen, gdk_screen_get_monitor_at_point(screen, rect_or_null->x, rect_or_null->y), &rectmonitor);
+
         gint size_x, size_y;
         gtk_window_get_size(GTK_WINDOW(window), &size_x, &size_y);
         gint x = rect_or_null->x + (rect_or_null->width - size_x) / 2;
-        gint y = rect_or_null->y > size_y ? rect_or_null->y - size_y : rect_or_null->y + rect_or_null->height;
+
+	// set y assuming window above tray icon (tray icon bottom of monitor)
+	gint y = rect_or_null->y - size_y;
+	// if y not in the monitor: wrong assumption --> window bellow tray icon
+	if (! (rectmonitor.y < y && y < rectmonitor.y+rectmonitor.height) ) {
+		y = rect_or_null->y + rect_or_null->height;
+	}
+
         gtk_window_move(GTK_WINDOW(window), x, y);
     }
 
