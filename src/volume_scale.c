@@ -76,12 +76,25 @@ static void do_show_volume_scale(GdkRectangle *rect_or_null)
     gtk_range_set_value(GTK_RANGE(scale), shared_audio_status()->volume);
     changing_scale_value = FALSE;
 
-    // Position the window
     if (rect_or_null) {
+        // Determine where the window will be
         gint size_x, size_y;
         gtk_window_get_size(GTK_WINDOW(window), &size_x, &size_y);
         gint x = rect_or_null->x + (rect_or_null->width - size_x) / 2;
-        gint y = rect_or_null->y > size_y ? rect_or_null->y - size_y : rect_or_null->y + rect_or_null->height;
+        gint y = rect_or_null->y - size_y;
+
+        // Find the coordinates of the monitor
+        GdkRectangle monitor_rect;
+        GdkScreen *screen = gtk_widget_get_screen(window);
+        gint monitor = gdk_screen_get_monitor_at_point(screen, rect_or_null->x, rect_or_null->y);
+        gdk_screen_get_monitor_geometry(screen, monitor, &monitor_rect);
+
+        // If the Y position is outside the monitor rect, the tray is at the top
+        if (y < monitor_rect.y) {
+            y = rect_or_null->y + rect_or_null->height;
+        }
+
+        // Position the window
         gtk_window_move(GTK_WINDOW(window), x, y);
     }
 
