@@ -1,0 +1,21 @@
+Source: pa-applet
+Section: contrib/sound
+Priority: extra
+Maintainer: Hector Rivas Gandara <keymon@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, x11proto-composite-dev, x11proto-randr-dev, libxfixes-dev, mime-support, libpcre3:amd64, libcairo2-dev, libxi-dev, mawk, libgdk-pixbuf2.0-dev, libwayland-dev, libglib2.0-dev, libatk1.0-dev, libxdmcp-dev:amd64, libharfbuzz-dev, libpulse-dev:amd64, libpthread-stubs0-dev:amd64, pkg-config, automake, libnotify-dev, libfreetype6-dev, x11proto-kb-dev, x11proto-damage-dev, x11proto-xinerama-dev, libfontconfig1-dev, libpopt0:amd64, libxrandr-dev, libxkbcommon-dev, libpixman-1-dev, libxcomposite-dev, libgtk-3-dev, libpng12-dev, x11proto-render-dev, libpango1.0-dev, libxau-dev:amd64, libxdamage-dev
+Standards-Version: 3.9.4
+Homepage: https://github.com/fernandotcl/pa-applet
+#Vcs-Git: git@github.com:fernandotcl/pa-applet.git
+#Vcs-Browser: https://github.com/fernandotcl/pa-applet
+
+Package: pa-applet
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Systray-applet to control some of PulseAudio's features
+  pa-applet is a systray-applet that allows you to control some of
+  PulseAudio's[1] features. More specifically, pa-applet allows you to control
+  the volume level of the default sink and mute or unmute it. It also allows you
+  to change the active profile of the default sink, which can be useful to tell
+  PulseAudio to redirect audio to the HDMI output instead of outputting to the
+  built-in speakers in a computer connected to an HDMI device.
+
