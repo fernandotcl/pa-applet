@@ -72,6 +72,9 @@ void notifications_flash(void)
     // Update the notification volume
     notify_notification_set_hint_int32(notification, "value", (gint)as->volume);
 
+    // Add transient flag
+    notify_notification_set_hint_int32(notification, "transient", (gint)1);
+    
     // Update the notification icon
     notify_notification_update(notification, PROGRAM_NAME, NULL, icon_name);
 
