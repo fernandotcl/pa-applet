@@ -73,7 +73,12 @@ void notifications_flash(void)
     notify_notification_set_hint_int32(notification, "value", (gint)as->volume);
 
     // Update the notification icon
-    notify_notification_update(notification, PROGRAM_NAME, NULL, icon_name);
+    char vol[4];
+    char notification_str[12];
+    sprintf(vol, "%d", (gint)as->volume);
+    strcpy(notification_str, "Volume: ");
+    strcat(notification_str, vol);
+    notify_notification_update(notification, notification_str, NULL, icon_name);
 
     // Show the notification
     notify_notification_show(notification, NULL);
