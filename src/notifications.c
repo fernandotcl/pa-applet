@@ -61,9 +61,9 @@ void notifications_flash(void)
         icon_name = "audio-volume-muted";
     }
     else {
-        if (as->volume < 100.0 / 3)
+        if (as->volume < 150.0 / 3)
             icon_name = "audio-volume-low";
-        else if (as->volume < 100.0 / 3 * 2)
+        else if (as->volume < 150.0 / 3 * 2)
             icon_name = "audio-volume-medium";
         else
             icon_name = "audio-volume-high";

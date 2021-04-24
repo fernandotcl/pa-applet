@@ -42,7 +42,7 @@ static void create_volume_scale(void)
     gtk_window_set_default_size(GTK_WINDOW(window), 0, 120);
 
     // Create the scale and add it to the window
-    scale = gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL, 0.0, 100.0, 1.0);
+    scale = gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL, 0.0, 150.0, 1.0);
     gtk_scale_set_draw_value(GTK_SCALE(scale), FALSE);
     gtk_range_set_inverted(GTK_RANGE(scale), TRUE);
     gtk_container_add(GTK_CONTAINER(window), scale);

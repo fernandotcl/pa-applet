@@ -40,8 +40,8 @@ static void profile_destroy(gpointer *data)
 void audio_status_raise_volume(void)
 {
     status.volume += STATUS_STEP_SIZE;
-    if (status.volume > 100.0)
-        status.volume = 100.0;
+    if (status.volume > 150.0)
+        status.volume = 150.0;
 }
 
 void audio_status_lower_volume(void)

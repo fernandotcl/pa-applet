@@ -199,10 +199,10 @@ static void sink_info_cb(pa_context *c, const pa_sink_info *info, int eol, void 
 
     // Update the audio status
     pa_volume_t volume = pa_cvolume_avg(&(info->volume));
-    if (volume > PA_VOLUME_NORM)
-        volume = PA_VOLUME_NORM;
+    if (volume > PA_VOLUME_UI_MAX)
+        volume = PA_VOLUME_UI_MAX;
     audio_status *as = shared_audio_status();
-    as->volume = volume * 100.0 / PA_VOLUME_NORM;
+    as->volume = volume * 150.0 / PA_VOLUME_UI_MAX;
     as->muted = info->mute ? TRUE : FALSE;
 
     // Update the tray icon and the volume scale
@@ -318,7 +318,7 @@ void pulse_glue_sync_volume(void)
     pa_cvolume volume;
     pa_cvolume_init(&volume);
     pa_cvolume_set(&volume, default_sink_num_channels,
-            as->volume * PA_VOLUME_NORM / 100);
+            as->volume * PA_VOLUME_UI_MAX / 150);
 
     // Set the volume
     pa_operation *oper = pa_context_set_sink_volume_by_index(context,
